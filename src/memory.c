@@ -39,7 +39,7 @@ void* kmalloc(uint32 size) {
     
     while(current) {
         if(current->is_free && current->size >= size) {
-            if(current->size > size + sizeof(memory_block_t) + BLOCK_SIZE) {
+            if(current->size > size + sizeof(memory_block_t) + MEM_BLOCK_SIZE) {
                 memory_block_t* new_block = (memory_block_t*)((uint32)current + sizeof(memory_block_t) + size);
                 new_block->size = current->size - size - sizeof(memory_block_t);
                 new_block->is_free = 1;

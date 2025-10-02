@@ -9,7 +9,7 @@ LDFLAGS = -m elf_i386 -T src/link.ld
 EMULATOR = qemu-system-i386
 EMULATOR_FLAGS = -kernel
 
-OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o obj/snake.o obj/memory.o obj/fs.o
+OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/irq.o obj/irqasm.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o obj/snake.o obj/memory.o obj/fs.o obj/timer.o obj/process.o obj/syscall.o obj/hal.o
 OUTPUT = tmp/boot/kernel.bin
 
 run: all
@@ -35,6 +35,12 @@ obj/kb.o: src/kb.c
 obj/isr.o: src/isr.c
 	$(COMPILER) $(CFLAGS) src/isr.c -o obj/isr.o
 
+obj/irq.o: src/irq.c
+	$(COMPILER) $(CFLAGS) src/irq.c -o obj/irq.o
+
+obj/irqasm.o: src/irq.asm
+	$(ASSEMBLER) $(ASFLAGS) -o obj/irqasm.o src/irq.asm
+
 obj/screen.o: src/screen.c
 	$(COMPILER) $(CFLAGS) src/screen.c -o obj/screen.o
 
@@ -58,6 +64,18 @@ obj/memory.o: src/memory.c
 
 obj/fs.o: src/fs.c
 	$(COMPILER) $(CFLAGS) src/fs.c -o obj/fs.o
+
+obj/timer.o: src/timer.c
+	$(COMPILER) $(CFLAGS) src/timer.c -o obj/timer.o
+
+obj/process.o: src/process.c
+	$(COMPILER) $(CFLAGS) src/process.c -o obj/process.o
+
+obj/syscall.o: src/syscall.c
+	$(COMPILER) $(CFLAGS) src/syscall.c -o obj/syscall.o
+
+obj/hal.o: src/hal.c
+	$(COMPILER) $(CFLAGS) src/hal.c -o obj/hal.o
 
 build: all
 	grub-mkrescue -o cavOS.iso tmp/

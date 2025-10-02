@@ -16,27 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef SYSCALL_H
+#define SYSCALL_H
 
 #include "types.h"
 #include "screen.h"
+#include "memory.h"
+#include "process.h"
 
-#define HEAP_START 0x100000
-#define HEAP_SIZE 0x100000
-#define MEM_BLOCK_SIZE 16
+#define SYSCALL_WRITE 0
+#define SYSCALL_READ 1
+#define SYSCALL_MALLOC 2
+#define SYSCALL_FREE 3
+#define SYSCALL_EXIT 4
+#define SYSCALL_GETPID 5
+#define SYSCALL_SLEEP 6
 
-typedef struct memory_block {
-    uint32 size;
-    int is_free;
-    struct memory_block* next;
-} memory_block_t;
-
-void init_memory();
-void* kmalloc(uint32 size);
-void kfree(void* ptr);
-void print_memory_stats();
-uint32 get_free_memory();
-uint32 get_used_memory();
+void init_syscalls();
+uint32 syscall_handler(uint32 syscall_num, uint32 arg1, uint32 arg2, uint32 arg3);
 
 #endif

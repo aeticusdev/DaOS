@@ -16,27 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef TIMER_H
+#define TIMER_H
 
 #include "types.h"
-#include "screen.h"
+#include "system.h"
 
-#define HEAP_START 0x100000
-#define HEAP_SIZE 0x100000
-#define MEM_BLOCK_SIZE 16
-
-typedef struct memory_block {
-    uint32 size;
-    int is_free;
-    struct memory_block* next;
-} memory_block_t;
-
-void init_memory();
-void* kmalloc(uint32 size);
-void kfree(void* ptr);
-void print_memory_stats();
-uint32 get_free_memory();
-uint32 get_used_memory();
+void init_timer(uint32 frequency);
+uint32 get_tick_count();
+void sleep(uint32 milliseconds);
 
 #endif

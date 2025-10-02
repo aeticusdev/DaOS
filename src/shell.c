@@ -20,6 +20,9 @@
 #include "../include/snake.h"
 #include "../include/memory.h"
 #include "../include/fs.h"
+#include "../include/process.h"
+#include "../include/timer.h"
+#include "../include/hal.h"
 
 void launch_shell(int n) {
     set_screen_color(0x0A, 0x00);
@@ -33,22 +36,31 @@ void launch_shell(int n) {
     
     if (cmdEql(command, "help")) {
         printf("Available commands:\n");
-        printf("help - Show this help message\n");
-        printf("clear - Clear the screen\n");
-        printf("color - Change text and background color\n");
-        printf("echo <text> - Echo the input text\n");
-        printf("add - Add two integers\n");
-        printf("sub - Subtract two integers\n");
-        printf("mul - Multiply two integers\n");
-        printf("div - Divide two integers\n");
-        printf("snake - Play the Snake game\n");
-        printf("memstat - Show memory statistics\n");
-        printf("ls - List all files\n");
-        printf("cat <file> - Display file contents\n");
-        printf("touch <file> - Create a new file\n");
-        printf("write <file> - Write to a file\n");
-        printf("rm <file> - Delete a file\n");
-        printf("exit - Exit the shell\n");
+        printf("System:\n");
+        printf("  help - Show this help message\n");
+        printf("  clear - Clear the screen\n");
+        printf("  uptime - Show system uptime\n");
+        printf("  memstat - Show memory statistics\n");
+        printf("  ps - List all processes\n");
+        printf("  devices - List registered devices\n");
+        printf("Display:\n");
+        printf("  color - Change text and background color\n");
+        printf("  echo <text> - Echo the input text\n");
+        printf("Math:\n");
+        printf("  add - Add two integers\n");
+        printf("  sub - Subtract two integers\n");
+        printf("  mul - Multiply two integers\n");
+        printf("  div - Divide two integers\n");
+        printf("Files:\n");
+        printf("  ls - List all files\n");
+        printf("  cat <file> - Display file contents\n");
+        printf("  touch <file> - Create a new file\n");
+        printf("  write <file> - Write to a file\n");
+        printf("  rm <file> - Delete a file\n");
+        printf("Games:\n");
+        printf("  snake - Play the Snake game\n");
+        printf("Other:\n");
+        printf("  exit - Exit the shell\n");
     } else if (cmdEql(command, "clear")) {
         clearScreen();
     } else if (cmdEql(command, "color")) {
@@ -135,6 +147,27 @@ void launch_shell(int n) {
         play_snake();
     } else if (cmdEql(command, "memstat")) {
         print_memory_stats();
+    } else if (cmdEql(command, "uptime")) {
+        uint32 ticks = get_tick_count();
+        uint32 seconds = ticks / 100;
+        uint32 minutes = seconds / 60;
+        uint32 hours = minutes / 60;
+        
+        printf("System uptime: ");
+        char h[10], m[10], s[10];
+        int_to_ascii(hours, h);
+        int_to_ascii(minutes % 60, m);
+        int_to_ascii(seconds % 60, s);
+        printf(h);
+        printf("h ");
+        printf(m);
+        printf("m ");
+        printf(s);
+        printf("s\n");
+    } else if (cmdEql(command, "ps")) {
+        list_processes();
+    } else if (cmdEql(command, "devices")) {
+        list_devices();
     } else if (cmdEql(command, "ls")) {
         list_files();
     } else if (cmdEql(command, "cat")) {

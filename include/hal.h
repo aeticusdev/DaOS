@@ -16,27 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef HAL_H
+#define HAL_H
 
 #include "types.h"
-#include "screen.h"
 
-#define HEAP_START 0x100000
-#define HEAP_SIZE 0x100000
-#define MEM_BLOCK_SIZE 16
+#define DEVICE_TYPE_STORAGE 1
+#define DEVICE_TYPE_INPUT 2
+#define DEVICE_TYPE_OUTPUT 3
+#define DEVICE_TYPE_NETWORK 4
 
-typedef struct memory_block {
-    uint32 size;
-    int is_free;
-    struct memory_block* next;
-} memory_block_t;
+typedef struct device {
+    char name[32];
+    uint32 type;
+    void (*init)();
+    int (*read)(void* buffer, uint32 size);
+    int (*write)(void* buffer, uint32 size);
+    void (*close)();
+    struct device* next;
+} device_t;
 
-void init_memory();
-void* kmalloc(uint32 size);
-void kfree(void* ptr);
-void print_memory_stats();
-uint32 get_free_memory();
-uint32 get_used_memory();
+void init_hal();
+int register_device(device_t* device);
+device_t* get_device(const char* name);
+void list_devices();
 
 #endif

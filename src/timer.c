@@ -16,27 +16,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MEMORY_H
-#define MEMORY_H
+#include "../include/timer.h"
+#include "../include/irq.h"
+#include "../include/system.h"
 
-#include "types.h"
-#include "screen.h"
+static uint32 tick = 0;
 
-#define HEAP_START 0x100000
-#define HEAP_SIZE 0x100000
-#define MEM_BLOCK_SIZE 16
+void timer_handler() {
+    tick++;
+}
 
-typedef struct memory_block {
-    uint32 size;
-    int is_free;
-    struct memory_block* next;
-} memory_block_t;
+void init_timer(uint32 frequency) {
+    uint32 divisor = 1193180 / frequency;
+    
+    outportb(0x43, 0x36);
+    
+    uint8 l = (uint8)(divisor & 0xFF);
+    uint8 h = (uint8)((divisor >> 8) & 0xFF);
+    
+    outportb(0x40, l);
+    outportb(0x40, h);
+    
+    irq_set_handler(0, timer_handler);
+}
 
-void init_memory();
-void* kmalloc(uint32 size);
-void kfree(void* ptr);
-void print_memory_stats();
-uint32 get_free_memory();
-uint32 get_used_memory();
+uint32 get_tick_count() {
+    return tick;
+}
 
-#endif
+void sleep(uint32 milliseconds) {
+    uint32 start = tick;
+    uint32 target = start + milliseconds;
+    
+    while(tick < target) {
+        __asm__ __volatile__("hlt");
+    }
+}
