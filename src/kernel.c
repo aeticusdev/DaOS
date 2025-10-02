@@ -22,11 +22,20 @@
 #include "../include/screen.h"
 #include "../include/isr.h"
 #include "../include/idt.h"
+#include "../include/memory.h"
+#include "../include/fs.h"
 
 void kmain() {
     clearScreen();
     set_screen_color(0x0F, 0x00);
     printf("DaOS Kernel Initialized.\n");
+    
+    printf("Initializing Memory Manager...\n");
+    init_memory();
+    
+    printf("Initializing Filesystem...\n");
+    init_filesystem();
+    
     isr_install();
     printf("Interrupt Service Routines Installed.\n");
     printf("Launching Shell...\n\n");

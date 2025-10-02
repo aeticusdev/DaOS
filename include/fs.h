@@ -16,23 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KB_H
-#define KB_H
+#ifndef FS_H
+#define FS_H
+
+#include "types.h"
 #include "screen.h"
-#include "util.h"
+#include "string.h"
+#include "memory.h"
 
-#define KEY_W 0x11
-#define KEY_A 0x1E
-#define KEY_S 0x1F
-#define KEY_D 0x20
-#define KEY_UP 0x48
-#define KEY_DOWN 0x50
-#define KEY_LEFT 0x4B
-#define KEY_RIGHT 0x4D
-#define KEY_ESC 0x01
+#define MAX_FILES 32
+#define MAX_FILENAME 64
+#define MAX_FILESIZE 4096
 
-string readStr();
-char readKeys();
-uint8 read_scancode();
+typedef struct {
+    char name[MAX_FILENAME];
+    uint32 size;
+    char data[MAX_FILESIZE];
+    int is_used;
+} file_t;
+
+void init_filesystem();
+int create_file(const char* filename);
+int write_file(const char* filename, const char* data, uint32 size);
+char* read_file(const char* filename, uint32* size);
+int delete_file(const char* filename);
+void list_files();
+int file_exists(const char* filename);
 
 #endif

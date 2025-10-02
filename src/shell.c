@@ -17,21 +17,37 @@
  */
 
 #include "../include/shell.h"
+#include "../include/snake.h"
+#include "../include/memory.h"
+#include "../include/fs.h"
+
 void launch_shell(int n) {
     set_screen_color(0x0A, 0x00);
     printf("DaOS> ");
     set_screen_color(0x07, 0x00);
-    string command = readStr();
+    string input = readStr();
+    
+    string command;
+    string arg;
+    split_command(input, &command, &arg);
+    
     if (cmdEql(command, "help")) {
         printf("Available commands:\n");
         printf("help - Show this help message\n");
         printf("clear - Clear the screen\n");
         printf("color - Change text and background color\n");
-        printf("echo - Echo the input text\n");
+        printf("echo <text> - Echo the input text\n");
         printf("add - Add two integers\n");
         printf("sub - Subtract two integers\n");
         printf("mul - Multiply two integers\n");
         printf("div - Divide two integers\n");
+        printf("snake - Play the Snake game\n");
+        printf("memstat - Show memory statistics\n");
+        printf("ls - List all files\n");
+        printf("cat <file> - Display file contents\n");
+        printf("touch <file> - Create a new file\n");
+        printf("write <file> - Write to a file\n");
+        printf("rm <file> - Delete a file\n");
         printf("exit - Exit the shell\n");
     } else if (cmdEql(command, "clear")) {
         clearScreen();
@@ -51,10 +67,12 @@ void launch_shell(int n) {
             printf("Color changed successfully.\n");
         }
     } else if (cmdEql(command, "echo")) {
-        printf("Enter text to echo: ");
-        string echoText = readStr();
-        printf(echoText);
-        printf("\n");
+        if(strlength(arg) > 0) {
+            printf(arg);
+            printf("\n");
+        } else {
+            printf("Usage: echo <text>\n");
+        }
     } else if (cmdEql(command, "add")) {
         printf("Enter first integer: ");
         string num1Str = readStr();
@@ -112,6 +130,73 @@ void launch_shell(int n) {
             int_to_ascii(result, resultStr);
             printf(resultStr);
             printf("\n");
+        }
+    } else if (cmdEql(command, "snake")) {
+        play_snake();
+    } else if (cmdEql(command, "memstat")) {
+        print_memory_stats();
+    } else if (cmdEql(command, "ls")) {
+        list_files();
+    } else if (cmdEql(command, "cat")) {
+        if(strlength(arg) > 0) {
+            uint32 size;
+            char* content = read_file(arg, &size);
+            if(content && size > 0) {
+                for(uint32 i = 0; i < size; i++) {
+                    printfch(content[i]);
+                }
+                printf("\n");
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: File not found or empty.\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: cat <filename>\n");
+        }
+    } else if (cmdEql(command, "touch")) {
+        if(strlength(arg) > 0) {
+            if(create_file(arg) >= 0) {
+                printf("File created: ");
+                printf(arg);
+                printf("\n");
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: Could not create file.\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: touch <filename>\n");
+        }
+    } else if (cmdEql(command, "write")) {
+        if(strlength(arg) > 0) {
+            printf("Enter content (press Enter to save):\n");
+            string content = readStr();
+            if(write_file(arg, content, strlength(content)) == 0) {
+                printf("File written: ");
+                printf(arg);
+                printf("\n");
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: Could not write file.\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: write <filename>\n");
+        }
+    } else if (cmdEql(command, "rm")) {
+        if(strlength(arg) > 0) {
+            if(delete_file(arg) == 0) {
+                printf("File deleted: ");
+                printf(arg);
+                printf("\n");
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: File not found.\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: rm <filename>\n");
         }
     } else if (cmdEql(command, "exit")) {        
         set_screen_color(0x0F, 0x00);

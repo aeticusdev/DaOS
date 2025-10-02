@@ -26,6 +26,8 @@ uint16 strlength(string ch);
 uint8 strEql(string ch1,string ch2);
 uint8 cmdEql(string ch1, string ch2);
 uint8 cmdLength(string ch);
-
+void strcpy(char* dest, const char* src);
+int strcmp(const char* str1, const char* str2);
+void split_command(string input, string* cmd, string* arg);
 
 #endif

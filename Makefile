@@ -9,7 +9,7 @@ LDFLAGS = -m elf_i386 -T src/link.ld
 EMULATOR = qemu-system-i386
 EMULATOR_FLAGS = -kernel
 
-OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o
+OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o obj/snake.o obj/memory.o obj/fs.o
 OUTPUT = tmp/boot/kernel.bin
 
 run: all
@@ -49,6 +49,15 @@ obj/util.o: src/util.c
 
 obj/shell.o: src/shell.c
 	$(COMPILER) $(CFLAGS) src/shell.c -o obj/shell.o
+
+obj/snake.o: src/snake.c
+	$(COMPILER) $(CFLAGS) src/snake.c -o obj/snake.o
+
+obj/memory.o: src/memory.c
+	$(COMPILER) $(CFLAGS) src/memory.c -o obj/memory.o
+
+obj/fs.o: src/fs.c
+	$(COMPILER) $(CFLAGS) src/fs.c -o obj/fs.o
 
 build: all
 	grub-mkrescue -o cavOS.iso tmp/

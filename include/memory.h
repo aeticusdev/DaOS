@@ -16,23 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KB_H
-#define KB_H
+#ifndef MEMORY_H
+#define MEMORY_H
+
+#include "types.h"
 #include "screen.h"
-#include "util.h"
 
-#define KEY_W 0x11
-#define KEY_A 0x1E
-#define KEY_S 0x1F
-#define KEY_D 0x20
-#define KEY_UP 0x48
-#define KEY_DOWN 0x50
-#define KEY_LEFT 0x4B
-#define KEY_RIGHT 0x4D
-#define KEY_ESC 0x01
+#define HEAP_START 0x100000
+#define HEAP_SIZE 0x100000
+#define BLOCK_SIZE 16
 
-string readStr();
-char readKeys();
-uint8 read_scancode();
+typedef struct memory_block {
+    uint32 size;
+    int is_free;
+    struct memory_block* next;
+} memory_block_t;
+
+void init_memory();
+void* kmalloc(uint32 size);
+void kfree(void* ptr);
+void print_memory_stats();
+uint32 get_free_memory();
+uint32 get_used_memory();
 
 #endif

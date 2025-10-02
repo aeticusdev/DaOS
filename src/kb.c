@@ -18,7 +18,9 @@
 
 #include "../include/kb.h"
 
-// US QWERTY keyboard scan code to ASCII mapping
+static int capslock_active = 0;
+static int shift_pressed = 0;
+
 const char scancode_to_ascii[] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
     '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
@@ -26,6 +28,21 @@ const char scancode_to_ascii[] = {
     0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0,
     '*', 0, ' '
 };
+
+const char scancode_to_ascii_shift[] = {
+    0,  27, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '\b',
+    '\t', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',
+    0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"', '~',
+    0, '|', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0,
+    '*', 0, ' '
+};
+
+char to_upper(char c) {
+    if (c >= 'a' && c <= 'z') {
+        return c - 32;
+    }
+    return c;
+}
 
 string readStr(){
     string str = (string)malloc(100);
@@ -69,6 +86,22 @@ char readKeys(){
             }
         }
     }
+    
+    if(keycode == 0x3A){
+        capslock_active = !capslock_active;
+        return 0;
+    }
+    
+    if(keycode == 0x2A || keycode == 0x36){
+        shift_pressed = 1;
+        return 0;
+    }
+    
+    if(keycode == 0xAA || keycode == 0xB6){
+        shift_pressed = 0;
+        return 0;
+    }
+    
     if(keycode < 0x3A){
         if(keycode == 0x0E){
             return '\b';
@@ -80,8 +113,28 @@ char readKeys(){
             return ' ';
         }
         else if(keycode < sizeof(scancode_to_ascii)){
-            return scancode_to_ascii[keycode];
+            char c;
+            if(shift_pressed){
+                c = scancode_to_ascii_shift[keycode];
+            } else {
+                c = scancode_to_ascii[keycode];
+                if(capslock_active){
+                    c = to_upper(c);
+                }
+            }
+            return c;
         }
+    }
+    return 0;
+}
+
+uint8 read_scancode(){
+    unsigned char status;
+    uint8 keycode;
+    status = inportb(0x64);
+    if(status & 0x01){
+        keycode = inportb(0x60);
+        return keycode;
     }
     return 0;
 }

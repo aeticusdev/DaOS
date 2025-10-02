@@ -16,23 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef KB_H
-#define KB_H
+#ifndef SNAKE_H
+#define SNAKE_H
+
+#include "types.h"
 #include "screen.h"
+#include "kb.h"
 #include "util.h"
 
-#define KEY_W 0x11
-#define KEY_A 0x1E
-#define KEY_S 0x1F
-#define KEY_D 0x20
-#define KEY_UP 0x48
-#define KEY_DOWN 0x50
-#define KEY_LEFT 0x4B
-#define KEY_RIGHT 0x4D
-#define KEY_ESC 0x01
+#define GAME_WIDTH 40
+#define GAME_HEIGHT 20
+#define MAX_SNAKE_LENGTH 200
 
-string readStr();
-char readKeys();
-uint8 read_scancode();
+typedef struct {
+    int x;
+    int y;
+} Point;
+
+typedef struct {
+    Point body[MAX_SNAKE_LENGTH];
+    int length;
+    int direction;
+} Snake;
+
+typedef struct {
+    Point position;
+    int active;
+} Food;
+
+void play_snake();
 
 #endif

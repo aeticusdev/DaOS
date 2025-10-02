@@ -72,3 +72,52 @@ uint8 cmdLength(string ch) {
     return len;
 }
 
+void strcpy(char* dest, const char* src) {
+    int i = 0;
+    while(src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    dest[i] = '\0';
+}
+
+int strcmp(const char* str1, const char* str2) {
+    int i = 0;
+    while(str1[i] != '\0' && str2[i] != '\0') {
+        if(str1[i] != str2[i]) {
+            return str1[i] - str2[i];
+        }
+        i++;
+    }
+    return str1[i] - str2[i];
+}
+
+void split_command(string input, string* cmd, string* arg) {
+    int i = 0;
+    while(input[i] != '\0' && input[i] != ' ') {
+        i++;
+    }
+    
+    *cmd = (string)malloc(i + 1);
+    for(int j = 0; j < i; j++) {
+        (*cmd)[j] = input[j];
+    }
+    (*cmd)[i] = '\0';
+    
+    while(input[i] == ' ') {
+        i++;
+    }
+    
+    int arg_start = i;
+    int arg_len = 0;
+    while(input[i] != '\0') {
+        arg_len++;
+        i++;
+    }
+    
+    *arg = (string)malloc(arg_len + 1);
+    for(int j = 0; j < arg_len; j++) {
+        (*arg)[j] = input[arg_start + j];
+    }
+    (*arg)[arg_len] = '\0';
+}
