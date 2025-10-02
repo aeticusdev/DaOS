@@ -1,0 +1,11 @@
+
+obj/
+*.o
+*.bin
+*.elf
+*.iso
+*.img
+*.map
+
+
+.vscode/
