@@ -41,22 +41,22 @@ void irq_remap() {
 void irq_install() {
     irq_remap();
     
-    set_idt_gate(32, (uint32)irq0);
-    set_idt_gate(33, (uint32)irq1);
-    set_idt_gate(34, (uint32)irq2);
-    set_idt_gate(35, (uint32)irq3);
-    set_idt_gate(36, (uint32)irq4);
-    set_idt_gate(37, (uint32)irq5);
-    set_idt_gate(38, (uint32)irq6);
-    set_idt_gate(39, (uint32)irq7);
-    set_idt_gate(40, (uint32)irq8);
-    set_idt_gate(41, (uint32)irq9);
-    set_idt_gate(42, (uint32)irq10);
-    set_idt_gate(43, (uint32)irq11);
-    set_idt_gate(44, (uint32)irq12);
-    set_idt_gate(45, (uint32)irq13);
-    set_idt_gate(46, (uint32)irq14);
-    set_idt_gate(47, (uint32)irq15);
+    set_idt_gate(32, (uint64)irq0);
+    set_idt_gate(33, (uint64)irq1);
+    set_idt_gate(34, (uint64)irq2);
+    set_idt_gate(35, (uint64)irq3);
+    set_idt_gate(36, (uint64)irq4);
+    set_idt_gate(37, (uint64)irq5);
+    set_idt_gate(38, (uint64)irq6);
+    set_idt_gate(39, (uint64)irq7);
+    set_idt_gate(40, (uint64)irq8);
+    set_idt_gate(41, (uint64)irq9);
+    set_idt_gate(42, (uint64)irq10);
+    set_idt_gate(43, (uint64)irq11);
+    set_idt_gate(44, (uint64)irq12);
+    set_idt_gate(45, (uint64)irq13);
+    set_idt_gate(46, (uint64)irq14);
+    set_idt_gate(47, (uint64)irq15);
 }
 
 void irq_handler(int irq) {

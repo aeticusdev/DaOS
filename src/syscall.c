@@ -20,20 +20,20 @@
 #include "../include/idt.h"
 #include "../include/timer.h"
 
-uint32 syscall_handler(uint32 syscall_num, uint32 arg1, uint32 arg2, uint32 arg3) {
+uint64 syscall_handler(uint64 syscall_num, uint64 arg1, uint64 arg2, uint64 arg3) {
     switch(syscall_num) {
         case SYSCALL_WRITE:
-            printf((char*)arg1);
+            printf((char*)(uintptr)arg1);
             return 0;
             
         case SYSCALL_READ:
             return 0;
             
         case SYSCALL_MALLOC:
-            return (uint32)kmalloc(arg1);
+            return (uintptr)kmalloc(arg1);
             
         case SYSCALL_FREE:
-            kfree((void*)arg1);
+            kfree((void*)(uintptr)arg1);
             return 0;
             
         case SYSCALL_EXIT:
@@ -54,25 +54,25 @@ uint32 syscall_handler(uint32 syscall_num, uint32 arg1, uint32 arg2, uint32 arg3
 }
 
 void syscall_wrapper() {
-    uint32 syscall_num, arg1, arg2, arg3;
-    uint32 ret;
+    uint64 syscall_num, arg1, arg2, arg3;
+    uint64 ret;
     
     __asm__ __volatile__(
-        "mov %%eax, %0\n"
-        "mov %%ebx, %1\n"
-        "mov %%ecx, %2\n"
-        "mov %%edx, %3\n"
+        "movq %%rax, %0\n"
+        "movq %%rdi, %1\n"
+        "movq %%rsi, %2\n"
+        "movq %%rdx, %3\n"
         : "=r"(syscall_num), "=r"(arg1), "=r"(arg2), "=r"(arg3)
     );
     
     ret = syscall_handler(syscall_num, arg1, arg2, arg3);
     
     __asm__ __volatile__(
-        "mov %0, %%eax\n"
+        "movq %0, %%rax\n"
         : : "r"(ret)
     );
 }
 
 void init_syscalls() {
-    set_idt_gate(0x80, (uint32)syscall_wrapper);
+    set_idt_gate(0x80, (uint64)syscall_wrapper);
 }

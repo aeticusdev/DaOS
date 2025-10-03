@@ -33,6 +33,6 @@
 #define SYSCALL_SLEEP 6
 
 void init_syscalls();
-uint32 syscall_handler(uint32 syscall_num, uint32 arg1, uint32 arg2, uint32 arg3);
+uint64 syscall_handler(uint64 syscall_num, uint64 arg1, uint64 arg2, uint64 arg3);
 
 #endif

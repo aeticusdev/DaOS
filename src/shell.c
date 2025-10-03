@@ -23,6 +23,10 @@
 #include "../include/process.h"
 #include "../include/timer.h"
 #include "../include/hal.h"
+#include "../include/ext2.h"
+#include "../include/disk.h"
+#include "../include/pmm.h"
+#include "../include/dma.h"
 
 void launch_shell(int n) {
     set_screen_color(0x0A, 0x00);
@@ -43,6 +47,7 @@ void launch_shell(int n) {
         printf("  memstat - Show memory statistics\n");
         printf("  ps - List all processes\n");
         printf("  devices - List registered devices\n");
+        printf("  disks - List disk drives\n");
         printf("Display:\n");
         printf("  color - Change text and background color\n");
         printf("  echo <text> - Echo the input text\n");
@@ -51,12 +56,17 @@ void launch_shell(int n) {
         printf("  sub - Subtract two integers\n");
         printf("  mul - Multiply two integers\n");
         printf("  div - Divide two integers\n");
-        printf("Files:\n");
+        printf("Files (Simple FS):\n");
         printf("  ls - List all files\n");
         printf("  cat <file> - Display file contents\n");
         printf("  touch <file> - Create a new file\n");
         printf("  write <file> - Write to a file\n");
         printf("  rm <file> - Delete a file\n");
+        printf("Files (EXT2):\n");
+        printf("  ext2ls <path> - List directory contents\n");
+        printf("  ext2cat <file> - Read and display file\n");
+        printf("  ext2stat <file> - Show file information\n");
+        printf("  ext2info - Show filesystem information\n");
         printf("Games:\n");
         printf("  snake - Play the Snake game\n");
         printf("Other:\n");
@@ -168,6 +178,68 @@ void launch_shell(int n) {
         list_processes();
     } else if (cmdEql(command, "devices")) {
         list_devices();
+    } else if (cmdEql(command, "disks")) {
+        disk_print_info();
+    } else if (cmdEql(command, "ext2info")) {
+        ext2_print_superblock();
+    } else if (cmdEql(command, "ext2ls")) {
+        if (strlength(arg) > 0) {
+            ext2_list_dir(arg);
+        } else {
+            ext2_list_dir("/");
+        }
+    } else if (cmdEql(command, "ext2cat")) {
+        if (strlength(arg) > 0) {
+            ext2_file_t* file = ext2_open(arg, 0);
+            if (file) {
+                char buffer[1024];
+                int bytes_read = ext2_read(file, buffer, 1023);
+                if (bytes_read > 0) {
+                    buffer[bytes_read] = '\0';
+                    printf(buffer);
+                    printf("\n");
+                } else {
+                    set_screen_color(0x0C, 0x00);
+                    printf("Error reading file or file is empty\n");
+                    set_screen_color(0x07, 0x00);
+                }
+                ext2_close(file);
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: File not found\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: ext2cat <filename>\n");
+        }
+    } else if (cmdEql(command, "ext2stat")) {
+        if (strlength(arg) > 0) {
+            ext2_inode_t inode;
+            if (ext2_stat(arg, &inode) == 0) {
+                printf("File: ");
+                printf(arg);
+                printf("\n");
+                printf("  Size: ");
+                char size_str[20];
+                int_to_ascii(inode.i_size, size_str);
+                printf(size_str);
+                printf(" bytes\n");
+                printf("  Blocks: ");
+                int_to_ascii(inode.i_blocks, size_str);
+                printf(size_str);
+                printf("\n");
+                printf("  Links: ");
+                int_to_ascii(inode.i_links_count, size_str);
+                printf(size_str);
+                printf("\n");
+            } else {
+                set_screen_color(0x0C, 0x00);
+                printf("Error: File not found\n");
+                set_screen_color(0x07, 0x00);
+            }
+        } else {
+            printf("Usage: ext2stat <filename>\n");
+        }
     } else if (cmdEql(command, "ls")) {
         list_files();
     } else if (cmdEql(command, "cat")) {

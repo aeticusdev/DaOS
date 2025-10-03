@@ -27,9 +27,21 @@ typedef signed int int32;
 typedef unsigned int uint32;
 typedef signed long long int64;
 typedef unsigned long long uint64;
-typedef char* string; 
+typedef char* string;
+
+#ifdef __x86_64__
+typedef uint64 uintptr;
+typedef int64 intptr;
+typedef uint64 size_t;
+#else
+typedef uint32 uintptr;
+typedef int32 intptr;
+typedef uint32 size_t;
+#endif
 
 #define low_16(address) (uint16)((address) & 0xFFFF)            
 #define high_16(address) (uint16)(((address) >> 16) & 0xFFFF)
+#define low_32(address) (uint32)((address) & 0xFFFFFFFF)
+#define high_32(address) (uint32)(((address) >> 32) & 0xFFFFFFFF)
 
 #endif

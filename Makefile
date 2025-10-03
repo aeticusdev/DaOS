@@ -2,22 +2,28 @@ COMPILER = gcc
 LINKER = ld
 ASSEMBLER = nasm
 
-CFLAGS = -m32 -c -ffreestanding -fno-stack-protector
-ASFLAGS = -f elf32
-LDFLAGS = -m elf_i386 -T src/link.ld
+CFLAGS = -m64 -c -ffreestanding -fno-stack-protector -mcmodel=large -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+ASFLAGS = -f elf64
+LDFLAGS = -m elf_x86_64 -T src/link.ld
 
-EMULATOR = qemu-system-i386
-EMULATOR_FLAGS = -kernel
+EMULATOR = qemu-system-x86_64
 
-OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/irq.o obj/irqasm.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o obj/snake.o obj/memory.o obj/fs.o obj/timer.o obj/process.o obj/syscall.o obj/hal.o
+OBJS = obj/kasm.o obj/kc.o obj/idt.o obj/isr.o obj/irq.o obj/irqasm.o obj/kb.o obj/screen.o obj/string.o obj/system.o obj/util.o obj/shell.o obj/snake.o obj/memory.o obj/fs.o obj/timer.o obj/process.o obj/syscall.o obj/hal.o obj/pmm.o obj/paging.o obj/dma.o obj/disk.o obj/ext2.o
 OUTPUT = tmp/boot/kernel.bin
+ISO = daos.iso
+DISK_IMG = disk.img
 
-run: all
-	$(EMULATOR) $(EMULATOR_FLAGS) $(OUTPUT)
+run: iso
+	$(EMULATOR) -cdrom $(ISO) -hda $(DISK_IMG) -m 512M
 
 all: $(OBJS)
 	mkdir -p tmp/boot/
 	$(LINKER) $(LDFLAGS) -o $(OUTPUT) $(OBJS)
+
+iso: all
+	mkdir -p tmp/boot/grub
+	cp grub.cfg tmp/boot/grub/grub.cfg
+	grub-mkrescue -o $(ISO) tmp/
 
 obj/kasm.o: src/kernel.asm
 	mkdir -p obj/
@@ -77,11 +83,35 @@ obj/syscall.o: src/syscall.c
 obj/hal.o: src/hal.c
 	$(COMPILER) $(CFLAGS) src/hal.c -o obj/hal.o
 
-build: all
-	grub-mkrescue -o cavOS.iso tmp/
+obj/pmm.o: src/pmm.c
+	$(COMPILER) $(CFLAGS) src/pmm.c -o obj/pmm.o
+
+obj/paging.o: src/paging.c
+	$(COMPILER) $(CFLAGS) src/paging.c -o obj/paging.o
+
+obj/dma.o: src/dma.c
+	$(COMPILER) $(CFLAGS) src/dma.c -o obj/dma.o
+
+obj/disk.o: src/disk.c
+	$(COMPILER) $(CFLAGS) src/disk.c -o obj/disk.o
+
+obj/ext2.o: src/ext2.c
+	$(COMPILER) $(CFLAGS) src/ext2.c -o obj/ext2.o
+
+disk-image:
+	dd if=/dev/zero of=$(DISK_IMG) bs=1M count=2048
+	mkfs.ext2 -F $(DISK_IMG)
+	mkdir -p mnt
+	sudo mount -o loop $(DISK_IMG) mnt
+	sudo mkdir -p mnt/boot mnt/home mnt/etc
+	echo "Welcome to DaOS!" | sudo tee mnt/boot/readme.txt
+	echo "Test file" | sudo tee mnt/home/test.txt
+	sudo umount mnt
+	rmdir mnt
 
 clean:
 	rm -f obj/*.o
 	rm -rf tmp/
+	rm -f $(ISO)
 
-.PHONY: run all build clean
+.PHONY: run all iso clean disk-image

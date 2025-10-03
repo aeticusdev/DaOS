@@ -121,3 +121,33 @@ void split_command(string input, string* cmd, string* arg) {
     }
     (*arg)[arg_len] = '\0';
 }
+
+void* memset(void* ptr, int value, size_t num) {
+    uint8* p = (uint8*)ptr;
+    for(size_t i = 0; i < num; i++) {
+        p[i] = (uint8)value;
+    }
+    return ptr;
+}
+
+void* memcpy(void* dest, const void* src, size_t num) {
+    uint8* d = (uint8*)dest;
+    const uint8* s = (const uint8*)src;
+    for(size_t i = 0; i < num; i++) {
+        d[i] = s[i];
+    }
+    return dest;
+}
+
+char* strchr(const char* str, int character) {
+    while(*str != '\0') {
+        if(*str == (char)character) {
+            return (char*)str;
+        }
+        str++;
+    }
+    if((char)character == '\0') {
+        return (char*)str;
+    }
+    return 0;
+}

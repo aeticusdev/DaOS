@@ -23,6 +23,24 @@
 
 #define KERNEL_CS 0x08
 
+#ifdef __x86_64__
+typedef struct {
+    uint16 low_offset;
+    uint16 sel;
+    uint8 ist;
+    uint8 flags;
+    uint16 mid_offset;
+    uint32 high_offset;
+    uint32 reserved;
+} __attribute__((packed)) idt_entry_t;
+
+typedef struct {
+    uint16 limit;
+    uint64 base;
+} __attribute__((packed)) idt_ptr_t;
+
+void set_idt_gate(int n, uint64 handler);
+#else
 typedef struct {
     uint16 low_offset;
     uint16 sel;
@@ -36,11 +54,13 @@ typedef struct {
     uint32 base;
 } __attribute__((packed)) idt_ptr_t;
 
+void set_idt_gate(int n, uint32 handler);
+#endif
+
 #define IDT_ENTRIES 256
 extern idt_entry_t idt[IDT_ENTRIES];
 extern idt_ptr_t idt_reg; 
 
-void set_idt_gate(int n, uint32 handler);
 void set_idt();
 
 #endif

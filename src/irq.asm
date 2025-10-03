@@ -33,338 +33,89 @@ global irq15
 
 extern irq_handler
 
-irq0:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 0
+; Macro for IRQ handlers in x86_64
+%macro IRQ_HANDLER 1
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rsi
+    push rdi
+    push rbp
+    push r8
+    push r9
+    push r10
+    push r11
+    push r12
+    push r13
+    push r14
+    push r15
+    
+    mov rdi, %1           ; First argument (irq number) in rdi
     call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop r11
+    pop r10
+    pop r9
+    pop r8
+    pop rbp
+    pop rdi
+    pop rsi
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
+    iretq
+%endmacro
+
+irq0:
+    IRQ_HANDLER 0
 
 irq1:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 1
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 1
 
 irq2:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 2
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 2
 
 irq3:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 3
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 3
 
 irq4:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 4
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 4
 
 irq5:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 5
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 5
 
 irq6:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 6
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 6
 
 irq7:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 7
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 7
 
 irq8:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 8
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 8
 
 irq9:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 9
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 9
 
 irq10:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 10
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 10
 
 irq11:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 11
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 11
 
 irq12:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 12
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 12
 
 irq13:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 13
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 13
 
 irq14:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 14
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 14
 
 irq15:
-    pusha
-    push ds
-    push es
-    push fs
-    push gs
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    push 15
-    call irq_handler
-    add esp, 4
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popa
-    iret
+    IRQ_HANDLER 15

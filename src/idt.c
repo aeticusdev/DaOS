@@ -22,6 +22,17 @@
 idt_entry_t idt[IDT_ENTRIES];
 idt_ptr_t idt_reg;
 
+#ifdef __x86_64__
+void set_idt_gate(int n, uint64 handler) {
+    idt[n].low_offset = handler & 0xFFFF;
+    idt[n].sel = KERNEL_CS;
+    idt[n].ist = 0;
+    idt[n].flags = 0x8E;
+    idt[n].mid_offset = (handler >> 16) & 0xFFFF;
+    idt[n].high_offset = (handler >> 32) & 0xFFFFFFFF;
+    idt[n].reserved = 0;
+}
+#else
 void set_idt_gate(int n, uint32 handler) {
     idt[n].low_offset = handler & 0xFFFF;
     idt[n].sel = KERNEL_CS;
@@ -29,11 +40,12 @@ void set_idt_gate(int n, uint32 handler) {
     idt[n].flags = 0x8E;
     idt[n].high_offset = (handler >> 16) & 0xFFFF;
 }
+#endif
 
 void set_idt() {
     idt_reg.limit = (sizeof(idt_entry_t) * IDT_ENTRIES) - 1;
-    idt_reg.base = (uint32)&idt;
+    idt_reg.base = (uint64)&idt;
 
     memory_set((uint8*)&idt, 0, sizeof(idt_entry_t) * IDT_ENTRIES);
-    __asm__ __volatile__("lidtl (%0)" : : "r" (&idt_reg));
+    __asm__ __volatile__("lidt (%0)" : : "r" (&idt_reg));
 }

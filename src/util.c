@@ -65,6 +65,16 @@ int str_to_int(string ch)  {
     }
     return sign * result;
 }
+
+void uint_to_hex(uint32 n, char str[]) {
+    int i;
+    for (i = 7; i >= 0; i--) {
+        uint8 nibble = (n >> (i * 4)) & 0xF;
+        str[7 - i] = (nibble < 10) ? ('0' + nibble) : ('A' + nibble - 10);
+    }
+    str[8] = '\0';
+}
+
 void * malloc(int nbytes) {      
     static uint8 *heap = (uint8 *)0x200000;
     uint8 *prev_heap = heap;
